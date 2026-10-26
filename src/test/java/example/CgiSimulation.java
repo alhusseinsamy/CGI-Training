@@ -6,11 +6,10 @@ import static io.gatling.javaapi.http.HttpDsl.*;
 import io.gatling.javaapi.core.*;
 import io.gatling.javaapi.http.*;
 
-public class CgiSimulation extends Simulation {
+import static example.endpoints.ApiEndpoints.*;
+import static example.endpoints.WebEndpoints.*;
 
-  // Load VU count from system properties
-  // Reference: https://docs.gatling.io/guides/passing-parameters/
-  private static final int vu = Integer.getInteger("vu", 1);
+public class CgiSimulation extends Simulation {
 
   // Define HTTP configuration
   // Reference: https://docs.gatling.io/reference/script/protocols/http/protocol/
@@ -21,7 +20,9 @@ public class CgiSimulation extends Simulation {
 
   // Define scenario
   // Reference: https://docs.gatling.io/reference/script/core/scenario/
-  private static final ScenarioBuilder scenario = scenario("Scenario").exec(http("Session").get("/session"));
+  private static final ScenarioBuilder scenario = scenario("Scenario").exec(
+      homePage,
+      session);
 
   // Define assertions
   // Reference: https://docs.gatling.io/reference/script/core/assertions/
@@ -30,6 +31,6 @@ public class CgiSimulation extends Simulation {
   // Define injection profile and execute the test
   // Reference: https://docs.gatling.io/reference/script/core/injection/
   {
-    setUp(scenario.injectOpen(atOnceUsers(vu))).assertions(assertion).protocols(httpProtocol);
+    setUp(scenario.injectOpen(atOnceUsers(1))).assertions(assertion).protocols(httpProtocol);
   }
 }
