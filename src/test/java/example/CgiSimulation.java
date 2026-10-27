@@ -6,10 +6,29 @@ import static io.gatling.javaapi.http.HttpDsl.*;
 import io.gatling.javaapi.core.*;
 import io.gatling.javaapi.http.*;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import static example.endpoints.ApiEndpoints.*;
 import static example.endpoints.WebEndpoints.*;
 
 public class CgiSimulation extends Simulation {
+
+  private record Product(
+      int id,
+      String name,
+      String color,
+      String price,
+      int quantity,
+      String imageSrc,
+      String imageAlt) {
+  }
+
+  private static final ObjectMapper mapper = new ObjectMapper();
 
   public static final FeederBuilder<Object> usersFeeder = jsonFile("users.json").circular();
 
@@ -30,7 +49,8 @@ public class CgiSimulation extends Simulation {
       products,
       loginPage,
       feed(usersFeeder),
-      login);
+      login,
+      products);
 
   // Define assertions
   // Reference: https://docs.gatling.io/reference/script/core/assertions/
