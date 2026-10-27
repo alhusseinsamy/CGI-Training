@@ -11,6 +11,8 @@ import static example.endpoints.WebEndpoints.*;
 
 public class CgiSimulation extends Simulation {
 
+  public static final FeederBuilder<Object> usersFeeder = jsonFile("users.json").circular();
+
   // Define HTTP configuration
   // Reference: https://docs.gatling.io/reference/script/protocols/http/protocol/
   private static final HttpProtocolBuilder httpProtocol = http.baseUrl("https://api-ecomm.gatling.io")
@@ -25,7 +27,10 @@ public class CgiSimulation extends Simulation {
       session,
       exec(session -> session.set("pageNumber", "0")),
       exec(session -> session.set("searchKey", "")),
-      products);
+      products,
+      loginPage,
+      feed(usersFeeder),
+      login);
 
   // Define assertions
   // Reference: https://docs.gatling.io/reference/script/core/assertions/
