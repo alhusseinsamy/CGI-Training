@@ -41,21 +41,12 @@ public class CgiSimulation extends Simulation {
 
   // Define scenario
   // Reference: https://docs.gatling.io/reference/script/core/scenario/
-  private static final ScenarioBuilder scenario = scenario("Scenario").exec(
-      homePage,
-      session,
-      exec(session -> session.set("pageNumber", "0")),
-      exec(session -> session.set("searchKey", "")),
-      products,
-      loginPage,
-      feed(usersFeeder),
-      login,
-      products,
-      exec(session -> {
+  private static final ScenarioBuilder scenario = scenario("Scenario").exec(homePage, session,
+      exec(session -> session.set("pageNumber", "0")), exec(session -> session.set("searchKey", "")), products,
+      loginPage, feed(usersFeeder), login, products, exec(session -> {
         try {
-          List<Product> products = mapper.readValue(
-              session.getString("Products"), new TypeReference<List<Product>>() {
-              });
+          List<Product> products = mapper.readValue(session.getString("Products"), new TypeReference<List<Product>>() {
+          });
           Random rand = new Random();
           Product randomProduct = products.get(rand.nextInt(products.size()));
 
@@ -82,6 +73,7 @@ public class CgiSimulation extends Simulation {
   // Define injection profile and execute the test
   // Reference: https://docs.gatling.io/reference/script/core/injection/
   {
+
     setUp(scenario.injectOpen(atOnceUsers(1))).assertions(assertion).protocols(httpProtocol);
   }
 }

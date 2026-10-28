@@ -23,11 +23,17 @@ public class ApiEndpoints {
             .check(jmesPath("accessToken").saveAs("AccessToken"));
 
     public static final HttpRequestActionBuilder addToCart = http("Add to cart").post("/cart")
-            .body(ElFileBody("cart.json"))
+            // .body(ElFileBody("cart.json"))
+            .body(StringBody(
+                    "{ \"sessionId\": \"#{SessionId}\", \"cart\": #{CartItems}}"))
+            .asJson()
             .check(status().is(200));
 
     public static final HttpRequestActionBuilder checkout = http("Checkout").post("/checkout")
-            .body(ElFileBody("cart.json"))
+            // .body(ElFileBody("cart.json"))
+            .body(StringBody(
+                    "{ \"sessionId\": \"#{SessionId}\", \"cart\": #{CartItems}}"))
+            .asJson()
             .header("Authorization", "#{AccessToken}")
             .check(status().is(200));
 
