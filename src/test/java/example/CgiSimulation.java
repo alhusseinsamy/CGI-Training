@@ -50,7 +50,29 @@ public class CgiSimulation extends Simulation {
       loginPage,
       feed(usersFeeder),
       login,
-      products);
+      products,
+      exec(session -> {
+        try {
+          List<Product> products = mapper.readValue(
+              session.getString("Products"), new TypeReference<List<Product>>() {
+              });
+          Random rand = new Random();
+          Product randomProduct = products.get(rand.nextInt(products.size()));
+
+          List<Product> cartItems = new ArrayList<>();
+          cartItems.add(randomProduct);
+
+          // Serialize updated cart list back to session
+          String cartItemsJsonString = mapper.writeValueAsString(cartItems);
+          return session.set("CartItems", cartItemsJsonString);
+
+        } catch (Exception e) {
+          throw new RuntimeException(e);
+
+        }
+
+      }),
+      addToCart);
 
   // Define assertions
   // Reference: https://docs.gatling.io/reference/script/core/assertions/
