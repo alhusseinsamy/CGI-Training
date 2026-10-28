@@ -19,10 +19,16 @@ public class ApiEndpoints {
     public static final HttpRequestActionBuilder login = http("Login").post("/login")
             .formParam("username", "#{username}")
             .formParam("password", "#{password}")
-            .check(status().is(200));
+            .check(status().is(200))
+            .check(jmesPath("accessToken").saveAs("AccessToken"));
 
     public static final HttpRequestActionBuilder addToCart = http("Add to cart").post("/cart")
             .body(ElFileBody("cart.json"))
+            .check(status().is(200));
+
+    public static final HttpRequestActionBuilder checkout = http("Checkout").post("/checkout")
+            .body(ElFileBody("cart.json"))
+            .header("Authorization", "#{AccessToken}")
             .check(status().is(200));
 
 }
