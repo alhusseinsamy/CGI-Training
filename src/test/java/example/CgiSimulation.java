@@ -28,6 +28,8 @@ public class CgiSimulation extends Simulation {
       String imageAlt) {
   }
 
+  public static final String scenario = System.getProperty("scenario", "appScenario");
+
   private static final ObjectMapper mapper = new ObjectMapper();
 
   public static final FeederBuilder<Object> usersFeeder = jsonFile("users.json").circular();
@@ -41,7 +43,7 @@ public class CgiSimulation extends Simulation {
 
   // Define scenario
   // Reference: https://docs.gatling.io/reference/script/core/scenario/
-  private static final ScenarioBuilder scenario = scenario("Scenario").exec(homePage, session,
+  private static final ScenarioBuilder appScenario = scenario("App Scenario").exec(homePage, session,
       exec(session -> session.set("pageNumber", "0")), exec(session -> session.set("searchKey", "")), products,
       loginPage,
       feed(usersFeeder),
@@ -66,7 +68,23 @@ public class CgiSimulation extends Simulation {
 
       }), addToCart, checkout);
 
+  private static final ScenarioBuilder webScenario = scenario("Web Scenario").exec(
+      homePage,
+      session,
+      exec(session -> session.set("pageNumber", "0")),
+      exec(session -> session.set("searchKey", "")),
+      products,
+      loginPage);
+
   private static final Assertion assertion = global().failedRequests().count().lt(1L);
+
+  private static final ScenarioBuilder getScenario() {
+    return switch (scenario) {
+      case "appScenario" -> appScenario;
+      case "webScenario" -> webScenario;
+      default -> appScenario;
+    };
+  }
 
   // private static final List<Assertion> assertions =
   // List.of(global().failedRequests().count().lt(1L),
@@ -76,6 +94,11 @@ public class CgiSimulation extends Simulation {
   // Reference: https://docs.gatling.io/reference/script/core/injection/
   {
 
-    setUp(scenario.injectOpen(atOnceUsers(1))).assertions(assertion).protocols(httpProtocol);
+    // setUp(
+    // appScenario.injectOpen(atOnceUsers(1)),
+    // webScenario.injectOpen(atOnceUsers(1))).assertions(assertion).protocols(httpProtocol);
+
+    setUp(
+        getScenario().injectOpen(atOnceUsers(1))).assertions(assertion).protocols(httpProtocol);
   }
 }
