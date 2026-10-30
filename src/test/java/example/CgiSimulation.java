@@ -43,7 +43,9 @@ public class CgiSimulation extends Simulation {
   // Reference: https://docs.gatling.io/reference/script/core/scenario/
   private static final ScenarioBuilder scenario = scenario("Scenario").exec(homePage, session,
       exec(session -> session.set("pageNumber", "0")), exec(session -> session.set("searchKey", "")), products,
-      loginPage, feed(usersFeeder), login, products, exec(session -> {
+      loginPage,
+      feed(usersFeeder),
+      login, products, exec(session -> {
         try {
           List<Product> products = mapper.readValue(session.getString("Products"), new TypeReference<List<Product>>() {
           });
@@ -62,13 +64,13 @@ public class CgiSimulation extends Simulation {
 
         }
 
-      }),
-      addToCart,
-      checkout);
+      }), addToCart, checkout);
 
-  // Define assertions
-  // Reference: https://docs.gatling.io/reference/script/core/assertions/
   private static final Assertion assertion = global().failedRequests().count().lt(1L);
+
+  // private static final List<Assertion> assertions =
+  // List.of(global().failedRequests().count().lt(1L),
+  // global().responseTime().percentile(90).lt(500));
 
   // Define injection profile and execute the test
   // Reference: https://docs.gatling.io/reference/script/core/injection/
